@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Articles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .search-box {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .article {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .article h2 {
+            margin: 0 0 10px;
+            color: #333;
+        }
+        .article p {
+            margin: 0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Search Articles</h1>
+        <div class="search-box">
+            <input type="text" id="search-term" placeholder="Enter search term">
+            <button onclick="searchArticles()">Search</button>
+        </div>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        function searchArticles() {
+            const searchTerm = document.getElementById("search-term").value;
+
+            fetch(`/search?query=${searchTerm}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = '';
+
+                    if (data.length === 0) {
+                        resultsDiv.innerHTML = '<p>No results found.</p>';
+                    } else {
+                        data.forEach(article => {
+                            const articleDiv = document.createElement('div');
+                            articleDiv.classList.add('article');
+                            const topic= document.createElement('h1');
+                            const title = document.createElement('h2');
+                            title.textContent = article.title;
+
+                            const content = document.createElement('p');
+                            content.innerHTML = highlightText(article.content, article.highlights);
+                            articleDiv.appendChild(topic);
+                            articleDiv.appendChild(title);
+                            articleDiv.appendChild(content);
+                            resultsDiv.appendChild(articleDiv);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function highlightText(content, highlights) {
+            if (highlights && highlights.length > 0) {
+                highlights.forEach(highlight => {
+                    const term = highlight.texts[0].value;
+                    content = content.replace(new RegExp(term, 'gi'), match => `<mark>${match}</mark>`);
+                });
+            }
+            return content;
+        }
+    </script>
+</body>
+</html>

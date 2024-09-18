@@ -1,0 +1,9 @@
+{
+    "routes": [
+      { "src": "/(.*)", "dest": "app.py" }
+    ],
+    "env": {
+        "MONGODB_URI": "mongodb+srv://kavi22021ad:Kaviya1234@cluster0.jyx09.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+      }
+  }
+  
