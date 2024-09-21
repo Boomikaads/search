@@ -10,7 +10,7 @@ collection = db['articles']
 
 @app.route('/')
 def home():
-    return redirect("https://app-offa.vercel.app/", code=302)
+    return redirect("index.html", code=302)
 
 @app.route('/search', methods=['GET'])
 def search():
