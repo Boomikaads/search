@@ -1,21 +1,22 @@
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, request, jsonify, redirect, render_template
 from pymongo import MongoClient
 
 app = Flask(__name__)
 
-# Replace with your MongoDB credentials
+# MongoDB setup
 client = MongoClient("mongodb+srv://kavi22021ad:Kaviya1234@cluster0.jyx09.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 db = client['Constitution']
 collection = db['articles']
 
+# Serve the index.html file
 @app.route('/')
 def home():
-    return redirect("index.html", code=302)
+    return render_template("index.html")
 
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('query', '')
-    
+
     aggregate_query = [
         {
             "$search": {
@@ -41,7 +42,7 @@ def search():
     ]
 
     results = list(collection.aggregate(aggregate_query))
-    
+
     response = []
     for result in results:
         response.append({
@@ -50,8 +51,9 @@ def search():
             "content": result.get("content", "No Content"),
             "highlights": result.get("highlights", [])
         })
-    
+
     return jsonify(response)
 
 if __name__ == '__main__':
     app.run(debug=True)
+
